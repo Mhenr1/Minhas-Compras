@@ -10,7 +10,7 @@
     </ContentPage.ToolbarItems>
     <VerticalStackLayout>
         <SearchBar Placeholder="Pesquisar produtos" x:Name="txt_search" TextChanged="txt_search_TextChanged" />
-        <ListView x:Name="lst_produtos">
+        <ListView x:Name="lst_produtos" ItemSelected="lst_produtos_ItemSelected">
 
             <ListView.Header>
                 <Grid ColumnDefinitions="*,*,*,*,*">

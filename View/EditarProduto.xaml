@@ -3,10 +3,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Minhas_Compras.View.EditarProduto"
              Title="EditarProduto">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Editar"  Clicked="ToolbarItem_Clicked_Editar"/>
+    </ContentPage.ToolbarItems>
+
+    <VerticalStackLayout Spacing="10" Margin="10">
+        <Label Text="Descrição do Produto:" />
+        <Entry Text="{Binding Descricao}" x:Name="txt_descricao"/>
+
+        <Label Text="Quantidade" />
+        <Entry Text="{Binding Quantidade}"  x:Name="txt_quantidade"  Keyboard="Numeric"/>
+
+        <Label Text="Preço unitário" />
+        <Entry Text="{Binding Preco}"  x:Name="txt_preco"  Keyboard="Numeric"/>
+
     </VerticalStackLayout>
 </ContentPage>
+        
