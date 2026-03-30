@@ -2,11 +2,25 @@
 
 namespace Minhas_Compras.Models
 {
+
     public class Produto
     {
+        string _descricao;
+
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        public string Descricao { get; set; }
+        public string Descricao
+        {
+            get => _descricao;
+            set
+            {
+                if (value == null|value == "")
+                {
+                    throw new Exception("Por favor, informe a descrição do produto");
+                }
+                _descricao = value;
+            }
+        }
         public double Preco { get; set; }
         public double Quantidade { get; set; }
         public double Total { get => Quantidade * Preco; }
