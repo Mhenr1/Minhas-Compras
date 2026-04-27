@@ -5,20 +5,27 @@
              Title="ListaProduto">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Somar" Clicked="ToolbarItem_Clicked_Somar"/>
+        <ToolbarItem Text="Somar Categoria" Clicked="ToolbarItem_Clicked_SomarCat"/>
+
         <ToolbarItem Text="Adicionar" Clicked="ToolbarItem_Clicked"/>
         
     </ContentPage.ToolbarItems>
     <VerticalStackLayout>
         <SearchBar Placeholder="Pesquisar produtos" x:Name="txt_search" TextChanged="txt_search_TextChanged" />
+        <Picker x:Name="lst_categoria" Title="Filtrar por categoria" SelectedItem="{Binding CategoriaSelecionada}"
+          SelectedIndexChanged="lst_categoria_SelectedIndexChanged" />
+        
         <ListView x:Name="lst_produtos" ItemSelected="lst_produtos_ItemSelected">
 
             <ListView.Header>
-                <Grid ColumnDefinitions="*,*,*,*,*">
+                <Grid ColumnDefinitions="*,*,*,*,*,*">
                     <Label Text="ID" Grid.Column="0" FontAttributes="Bold"/>
                     <Label Text="Descrição" Grid.Column="1" FontAttributes="Bold"/>
                     <Label Text="Preço" Grid.Column="2" FontAttributes="Bold"/>
                     <Label Text="Quantidade" Grid.Column="3" FontAttributes="Bold"/>
                     <Label Text="Total" Grid.Column="4" FontAttributes="Bold"/>
+                    <Label Text="Categoria" Grid.Column="5" FontAttributes="Bold"/>
+
                 </Grid>
             </ListView.Header>
 
@@ -29,12 +36,14 @@
                             <MenuItem Text="Remover" Clicked="MenuItem_Clicked_Remover" CommandParameter="{Binding Id}"/>
 
                         </ViewCell.ContextActions>
-                        <Grid ColumnDefinitions="*,*,*,*,*">
+                        <Grid ColumnDefinitions="*,*,*,*,*,*">
                             <Label Text="{Binding Id}" Grid.Column="0"/>
                             <Label Text="{Binding Descricao}" Grid.Column="1" />
                             <Label Text="{Binding Preco}" Grid.Column="2" />
                             <Label Text="{Binding Quantidade}" Grid.Column="3"/>
                             <Label Text="{Binding Total}" Grid.Column="4" />
+                            <Label Text="{Binding Categoria}" Grid.Column="5" />
+
                         </Grid>
                     </ViewCell>
                 </DataTemplate>

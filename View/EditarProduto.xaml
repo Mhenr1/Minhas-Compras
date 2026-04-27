@@ -18,6 +18,8 @@
         <Label Text="Preço unitário" />
         <Entry Text="{Binding Preco}"  x:Name="txt_preco"  Keyboard="Numeric"/>
 
+        <Label Text="Categoria" />
+        <Entry Text="{Binding Categoria}" x:Name="txt_categoria"  />
     </VerticalStackLayout>
 </ContentPage>
         

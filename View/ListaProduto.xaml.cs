@@ -1,15 +1,42 @@
 using Minhas_Compras.Models;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace Minhas_Compras.View;
 
 public partial class ListaProduto : ContentPage
 {
     ObservableCollection<Produto> lista = new ObservableCollection<Produto>();
+    List<string> categorias;
     public ListaProduto()
     {
         InitializeComponent();
         lst_produtos.ItemsSource = lista;
+     
+    }
+
+    String _categoria = "";
+     void atualizaCategorias()
+    {
+        
+
+        categorias = new List<string>(
+                lista.Select(i => i.Categoria).Where(i=>!String.IsNullOrEmpty(i)).Distinct()
+                      .OrderBy(i => i)
+                );
+        categorias.Insert(0, "Todas");
+        lst_categoria.ItemsSource = categorias;
+        Debug.WriteLine(_categoria);
+
+        if (!string.IsNullOrEmpty(_categoria) && categorias.Contains(_categoria))
+        {
+            lst_categoria.SelectedItem = _categoria;
+        }
+        else
+        {
+            lst_categoria.SelectedIndex = 0;
+        }
+
     }
 
     protected async override void OnAppearing()
@@ -18,7 +45,11 @@ public partial class ListaProduto : ContentPage
         {
             lista?.Clear();
             List<Produto> tmp = await App.Db.GetAll();
-            tmp.ForEach(i => lista.Add(i));
+            foreach(var i in tmp)
+            {
+                lista?.Add(i);
+            }
+            atualizaCategorias();
         }
         catch (Exception ex)
         {
@@ -39,6 +70,24 @@ public partial class ListaProduto : ContentPage
     }
     CancellationTokenSource _cts = new CancellationTokenSource();
 
+    private async Task executa_busca ( CancellationToken token)
+    {
+
+        if (token.IsCancellationRequested) return;
+
+        string produto = txt_search.Text;
+        string categoria = lst_categoria.SelectedItem.ToString();
+        categoria = categoria == "Todas" ? null : categoria;
+        _categoria = categoria;
+
+        lista.Clear();
+        List<Produto> tmp = await App.Db.Search(produto, categoria);
+        foreach (var i in tmp)
+        {
+            lista.Add(i);
+        }
+       
+    }
     private async void txt_search_TextChanged(object sender, TextChangedEventArgs e)
     {
         _cts?.Cancel();
@@ -46,15 +95,24 @@ public partial class ListaProduto : ContentPage
         try
         {
             await Task.Delay(500, _cts.Token);
-
-            string q = txt_search.Text;
-            lista.Clear();
-            List<Produto> tmp = await App.Db.Search(q);
-
-            tmp.ForEach(i => lista.Add(i));
+            await executa_busca(_cts.Token);
+          
         }
-        catch (TaskCanceledException) { }
+        catch (TaskCanceledException) { return; }
 
+
+    }
+    private async void lst_categoria_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        _cts?.Cancel();
+        _cts = new CancellationTokenSource();
+        try
+        {
+            await Task.Delay(500, _cts.Token);
+
+            await executa_busca(_cts.Token);
+        }
+        catch (TaskCanceledException) { return; }
 
     }
 
@@ -66,7 +124,28 @@ public partial class ListaProduto : ContentPage
 
         DisplayAlertAsync("Total dos produtos", msg, "OK");
     }
+    private async void ToolbarItem_Clicked_SomarCat(object sender, EventArgs e)
+    {
+        string msg = "";
+        List<Produto> tmp = await App.Db.GetAll();
+        double total = 0;
+        foreach (var i in tmp)
+        {
+            total += i.Total;
+        }
 
+        lista.GroupBy(i => i.Categoria)
+             .Select(g => new { Categoria = g.Key, Total = g.Sum(i => i.Total) })
+             .ToList()
+             .ForEach(i =>
+             {
+                 var percentual = 100*(i.Total / total);
+                  msg += $"Os gastos com {i.Categoria} - Total: {i.Total:C2} ({percentual:f2}%) \n";
+                
+
+             });
+        await DisplayAlertAsync("Total", msg, "Ok");
+    }
     private async void MenuItem_Clicked_Remover(object sender, EventArgs e)
     {
         try
@@ -79,7 +158,7 @@ public partial class ListaProduto : ContentPage
                 await App.Db.Delete(p.Id);
                 lista.Remove(p);
             }
-
+            
         }
         catch (Exception ex)
         {
@@ -101,4 +180,6 @@ public partial class ListaProduto : ContentPage
 
         }
     }
+
+    
 }
